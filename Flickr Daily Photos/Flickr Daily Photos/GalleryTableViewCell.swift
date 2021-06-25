@@ -59,40 +59,29 @@ class GalleryTableViewCell: UITableViewCell {
         return stackView
     }()
     
+    private func labelString(for date: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY-MM-dd"
+        let galleryDate = formatter.date(from: date)!
+        let currentDate = DataManager.getDate()
+        
+        let daysAgo = Calendar.current.dateComponents([.day], from: galleryDate, to: currentDate).day!
+        
+        if daysAgo == 0 {
+            return "Today"
+        } else if daysAgo == 1 {
+            return "Yesterday"
+        }
+        formatter.dateFormat = "d MMMM"
+        return formatter.string(from: galleryDate)
+    }
+    
     var galleryData: GalleryData? {
         didSet {
             guard let gallery = galleryData else { return }
             
-            let formatter = DateFormatter()
-            formatter.dateFormat = "YYYY-MM-dd"
-            let galleryDate = formatter.date(from: gallery.date)!
-            let currentDate = DataManager.getDate()
             
-//            let calendar = Calendar.current
-//            let galleryDateComponents = calendar.dateComponents([.year, .month, .day], from: galleryDate)
-//            let currentDateComoponents = calendar.dateComponents([.year, .month, .day], from: Date())
-            let daysAgo = Calendar.current.dateComponents([.day], from: galleryDate, to: currentDate).day!
-            
-            if daysAgo == 0 {
-                dateLabel.text = "Today"
-            } else if daysAgo == 1 {
-                dateLabel.text = "Yesterday"
-            } else {
-                formatter.dateFormat = "d MMMM"
-                dateLabel.text = formatter.string(from: galleryDate)
-            }
-            
-//            if galleryDateComponents == currentDateComoponents {
-//                dateLabel.text = "Today"
-//            } else if galleryDateComponents == currentDateComoponents - DateComponents(day: 1) {
-//                dateLabel.text = "Yesterday"
-//            } else {
-//                formatter.dateFormat = "d MMMM"
-//                dateLabel.text = formatter.string(from: galleryDate)
-//            }
-            
-            
-            
+            dateLabel.text = labelString(for: gallery.date)
             dateLabel.isEnabled = true
             
             if let mainImage = gallery.images[0] {
