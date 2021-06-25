@@ -45,12 +45,7 @@ class GalleryViewController: UIViewController {
                                                 direction: .forward,
                                                 animated: true,
                                                 completion: nil)
-        
         self.pageController?.didMove(toParent: self)
-//        self.title = galleryData.titles?[0]
-//        let title = galleryData.titles?[0]
-//        print(title!)
-        
     }
 
 }
@@ -71,9 +66,6 @@ extension GalleryViewController: UIPageViewControllerDataSource {
                                                                       photo: galleryData.images[index],
                                                                       index: index)
         viewController.delegate = self
-//        let title = galleryData.titles?[index]
-//        self.title = galleryData.titles?[index]
-//        print(title!)
         
         return viewController
     }
@@ -93,9 +85,6 @@ extension GalleryViewController: UIPageViewControllerDataSource {
                                                                       photo: galleryData.images[index],
                                                                       index: index)
         viewController.delegate = self
-//        let title = galleryData.titles?[index]
-//        self.title = galleryData.titles?[index]
-//        print(title!)
         
         return viewController
         
