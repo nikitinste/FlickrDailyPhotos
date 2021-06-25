@@ -16,6 +16,8 @@ class GalleryTableViewCell: UITableViewCell {
     var centerImageView: UIImageView = UIImageView()
     var rightImageView: UIImageView = UIImageView()
     
+    var imageConstraints: [NSLayoutConstraint] = []
+    
     lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
@@ -86,14 +88,9 @@ class GalleryTableViewCell: UITableViewCell {
             
             if let mainImage = gallery.images[0] {
                 mainImageView.image = mainImage
-            } else {
-                mainImageView.image = nil
-            }
-            
-            if let mainImage = mainImageView.image {
                 let ratio = mainImage.size.width / mainImage.size.height
-                mainImageView.widthAnchor.constraint(equalTo: mainImageView.heightAnchor,
-                                                     multiplier: ratio).isActive = true
+                imageConstraints.append(mainImageView.widthAnchor.constraint(equalTo: mainImageView.heightAnchor,
+                                                     multiplier: ratio))
             }
             
             if let leftImage = gallery.images[1],
@@ -102,34 +99,25 @@ class GalleryTableViewCell: UITableViewCell {
                 leftImageView.image = leftImage
                 centerImageView.image = centerImage
                 rightImageView.image = rightImage
-            } else {
-                leftImageView.image = nil
-                centerImageView.image = nil
-                rightImageView.image = nil
-            }
-            
-            if let leftImage = leftImageView.image,
-               let centerImage = centerImageView.image,
-               let rightImage = rightImageView.image {
+                
                 let centerImageScaleIndex = leftImage.size.height / centerImage.size.height
                 let rightImageScaleIndex = leftImage.size.height / rightImage.size.height
                 let centerImageScaledWidth = centerImage.size.width * centerImageScaleIndex
                 let rightImageScaledWidth = rightImage.size.width * rightImageScaleIndex
-//                let totalWidh = leftImage.size.width + centerImageScaledWidth + rightImageScaledWidth + spasing * 2
-//                let totalRatio =  totalWidh / leftImage.size.height
                 let leftImageRatio = leftImage.size.width / leftImage.size.height
                 let centerImageRatio = centerImageScaledWidth / leftImage.size.height
                 let rightImageRatio = rightImageScaledWidth / leftImage.size.height
                 
-//                detailStackView.widthAnchor.constraint(equalTo: detailStackView.heightAnchor,
-//                                                     multiplier: totalRatio).isActive = true
-                leftImageView.widthAnchor.constraint(equalTo: leftImageView.heightAnchor,
-                                                     multiplier: leftImageRatio).isActive = true
-                centerImageView.widthAnchor.constraint(equalTo: centerImageView.heightAnchor,
-                                                       multiplier: centerImageRatio).isActive = true
-                rightImageView.widthAnchor.constraint(equalTo: rightImageView.heightAnchor,
-                                                      multiplier: rightImageRatio).isActive = true
+
+                imageConstraints.append(leftImageView.widthAnchor.constraint(equalTo: leftImageView.heightAnchor,
+                                                                             multiplier: leftImageRatio))
+                imageConstraints.append(centerImageView.widthAnchor.constraint(equalTo: centerImageView.heightAnchor,
+                                                                               multiplier: centerImageRatio))
+                imageConstraints.append(rightImageView.widthAnchor.constraint(equalTo: rightImageView.heightAnchor,
+                                                                              multiplier: rightImageRatio))
             }
+            
+            NSLayoutConstraint.activate(imageConstraints)
         }
     }
     
@@ -162,6 +150,22 @@ class GalleryTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        
+        mainImageView.removeConstraints(mainImageView.constraints)
+        leftImageView.removeConstraints(leftImageView.constraints)
+        centerImageView.removeConstraints(centerImageView.constraints)
+        rightImageView.removeConstraints(rightImageView.constraints)
+        
+        self.removeConstraints(imageConstraints)
+        imageConstraints.removeAll()
+        
+        mainImageView.image = nil
+        leftImageView.image = nil
+        centerImageView.image = nil
+        rightImageView.image = nil
     }
         
 }
