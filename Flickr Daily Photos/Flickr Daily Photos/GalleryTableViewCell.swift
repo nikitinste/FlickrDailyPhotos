@@ -29,16 +29,11 @@ class GalleryTableViewCell: UITableViewCell {
             dateLabel?.isEnabled = true
             
             if let mainImage = gallery.images[0] {
-//                print("setting main image")
                 
                 mainImageView?.image = mainImage
                 let ratio = mainImage.size.width / mainImage.size.height
-                
-                
-                
                 mainImageView?.widthAnchor.constraint(equalTo: mainImageView!.heightAnchor,
                                                       multiplier: ratio).isActive = true
-                
             }
             
             if let leftImage = gallery.images[1],

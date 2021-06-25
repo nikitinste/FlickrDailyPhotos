@@ -10,6 +10,7 @@ import UIKit
 class DailyListTableViewController: UIViewController {
     
     var dataManager = DataManager.shared
+    var dateForSegue: Int?
     
     let tableView: UITableView = {
         let table = UITableView()
@@ -79,7 +80,9 @@ extension DailyListTableViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // push controller
+        let galleryViewController = GalleryViewController()
+        galleryViewController.galleryData = dataManager.getGallery(for: indexPath.row)
+        navigationController?.pushViewController(galleryViewController, animated: true)
     }
     
 }
