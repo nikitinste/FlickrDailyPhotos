@@ -128,7 +128,6 @@ class DataManager {
                 if index <= 3 {
                     self!.delegate.updatedGallery(gallery, at: indexPath)
                 }
-                // Huzaa!!
                 
             } else if let error = error {
                 //completion(.failure(error))

@@ -13,9 +13,4 @@ struct GalleryData {
     var images: [UIImage?] = Array.init(repeating: nil, count: 10)
     var titles: [String]?
     var imageURLs: [URL]?
-    
-    
-//    func getImage(for index: Int) -> UIImage? {
-//        if let image =
-//    }
 }

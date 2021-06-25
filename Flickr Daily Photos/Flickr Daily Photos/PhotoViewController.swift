@@ -9,21 +9,10 @@ import UIKit
 
 class PhotoViewController: UIViewController {
     
-//    var titleLabel: UILabel?
     private var imageView: UIImageView?
     private var photoImage: UIImage?
     
     var page: Pages
-    
-    
-//    var photoImage: UIImage? {
-//        didSet {
-//
-//
-//
-//
-//        }
-//    }
 
     init(with page: Pages, photo: UIImage?) {
         self.page = page
@@ -41,8 +30,6 @@ class PhotoViewController: UIViewController {
 
         imageView = UIImageView(frame: self.view.frame)
         imageView?.contentMode = .scaleAspectFit
-//        imageView?.backgroundColor = .blue
-//            imageView?.translatesAutoresizingMaskIntoConstraints = false
         imageView?.image = photoImage
         self.view.addSubview(imageView!)
     }

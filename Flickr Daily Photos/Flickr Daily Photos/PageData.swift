@@ -19,31 +19,6 @@ enum Pages: CaseIterable {
     case pageEight
     case pageNine
     
-    var name: String {
-        switch self {
-        case .pageZero:
-            return "This is page zero"
-        case .pageOne:
-            return "This is page one"
-        case .pageTwo:
-            return "This is page two"
-        case .pageThree:
-            return "This is page three"
-        case .pageFour:
-            return "This is page four"
-        case .pageFive:
-            return "This is page five"
-        case .pageSix:
-            return "This is page six"
-        case .pageSeven:
-            return "This is page seven"
-        case .pageEight:
-            return "This is page eight"
-        case .pageNine:
-            return "This is page nine"
-        }
-    }
-    
     var index: Int {
         switch self {
         case .pageZero:
