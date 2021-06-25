@@ -74,7 +74,7 @@ extension DailyListTableViewController: UITableViewDelegate {
             visibleRows.contains(indexPath),
             self === self.navigationController?.topViewController {
             
-            print("willDisplay cell")
+            print("new request")
             dataManager.fetchGalleries(for: indexPath.row)
         }
     }
