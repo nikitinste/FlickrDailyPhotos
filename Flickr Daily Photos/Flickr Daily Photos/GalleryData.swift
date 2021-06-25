@@ -11,6 +11,7 @@ import UIKit
 struct GalleryData {
     var date: String
     var images: [UIImage?] = Array.init(repeating: nil, count: 10)
+    var titles: [String]?
     var imageURLs: [URL]?
     
     

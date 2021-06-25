@@ -86,16 +86,19 @@ class DataManager {
     
     private func addGallery(with photos: [PhotoInfo], for date: String) {
         var urls: [URL] = []
+        var titles: [String] = []
         for photoInfo in photos {
             let photoURLpath = "\(photoInfo.server)/\(photoInfo.id)_\(photoInfo.secret).jpg"
             var urlComonents = photoURLComponents()
             urlComonents.path.append(photoURLpath)
             urls.append(urlComonents.url!)
+            titles.append(photoInfo.title)
+            
         }
         if urls.isEmpty {
             print(":( No :hotos for date: \(date)")
         }
-        let gallery = GalleryData(date: date, imageURLs: urls)
+        let gallery = GalleryData(date: date, titles: titles, imageURLs: urls)
         galleries[date] = gallery
     }
     
@@ -114,7 +117,7 @@ class DataManager {
     }
     
     private func fetсhPhoto(for date: String, by index: Int, from url: URL) {
-        guard index <= 3 else { return }
+//        guard index <= 3 else { return }
         let task = session.dataTask(with: url) { [weak self] (data, response, error) in
             if let data = data {
                 
@@ -194,7 +197,7 @@ class DataManager {
                         }
                     } catch {
                         //completion(.failure(error))
-                        print("JSON Decoding failure")
+                        print("JSON Decoding failure for date \(date)")
                         completedTasks += 1
                         if completedTasks == 10 {
                             self?.galleriesCount += self!.galleriesAtRequest

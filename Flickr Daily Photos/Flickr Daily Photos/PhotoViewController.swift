@@ -29,12 +29,6 @@ class PhotoViewController: UIViewController {
         self.page = page
         self.photoImage = photo
         
-        if photo != nil {
-            print("image!")
-        } else {
-            print("no image(")
-        }
-        
         super.init(nibName: nil, bundle: nil)
     }
     

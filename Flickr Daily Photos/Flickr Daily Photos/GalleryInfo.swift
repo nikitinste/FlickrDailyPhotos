@@ -13,14 +13,6 @@ struct PhotoInfo: Codable {
     let secret: String
     let server: String
     let title: String
-    
-//    enum CodingKeys: String, CodingKey {
-//        case id
-//        case owner
-//        case secret
-//        case server
-//        case title
-//    }
 }
 
 struct GalleryInfo: Codable {
