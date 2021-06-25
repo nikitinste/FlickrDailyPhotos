@@ -140,7 +140,6 @@ class GalleryTableViewCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = .yellow
         
         return imageView
     }
