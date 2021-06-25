@@ -11,12 +11,15 @@ class PhotoViewController: UIViewController {
     
     private var imageView: UIImageView?
     private var photoImage: UIImage?
+    private var index: Int
     
+    var delegate: PhotoViewControllerDelegate?
     var page: Pages
 
-    init(with page: Pages, photo: UIImage?) {
+    init(with page: Pages, photo: UIImage?, index: Int) {
         self.page = page
         self.photoImage = photo
+        self.index = index
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -33,5 +36,13 @@ class PhotoViewController: UIViewController {
         imageView?.image = photoImage
         self.view.addSubview(imageView!)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        delegate?.photoViewWillAppear(at: index)
+    }
 
+}
+
+protocol PhotoViewControllerDelegate {
+    func photoViewWillAppear(at index: Int) -> Void
 }

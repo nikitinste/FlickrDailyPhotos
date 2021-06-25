@@ -39,8 +39,12 @@ class GalleryViewController: UIViewController {
         self.view.addSubview(self.pageController!.view)
         
         
-        let initialVC = PhotoViewController(with: pages[0], photo: galleryData.images[0])
-        self.pageController?.setViewControllers([initialVC], direction: .forward, animated: true, completion: nil)
+        let initialViewController = PhotoViewController(with: pages[0], photo: galleryData.images[0], index: 0)
+        initialViewController.delegate = self
+        self.pageController?.setViewControllers([initialViewController],
+                                                direction: .forward,
+                                                animated: true,
+                                                completion: nil)
         
         self.pageController?.didMove(toParent: self)
 //        self.title = galleryData.titles?[0]
@@ -63,7 +67,10 @@ extension GalleryViewController: UIPageViewControllerDataSource {
             return nil
         }
         index -= 1
-        let viewController: PhotoViewController = PhotoViewController(with: pages[index], photo: galleryData.images[index])
+        let viewController: PhotoViewController = PhotoViewController(with: pages[index],
+                                                                      photo: galleryData.images[index],
+                                                                      index: index)
+        viewController.delegate = self
 //        let title = galleryData.titles?[index]
 //        self.title = galleryData.titles?[index]
 //        print(title!)
@@ -82,7 +89,10 @@ extension GalleryViewController: UIPageViewControllerDataSource {
             return nil
         }
         index += 1
-        let viewController: PhotoViewController = PhotoViewController(with: pages[index], photo: galleryData.images[index])
+        let viewController: PhotoViewController = PhotoViewController(with: pages[index],
+                                                                      photo: galleryData.images[index],
+                                                                      index: index)
+        viewController.delegate = self
 //        let title = galleryData.titles?[index]
 //        self.title = galleryData.titles?[index]
 //        print(title!)
@@ -99,9 +109,15 @@ extension GalleryViewController: UIPageViewControllerDataSource {
         return self.currentIndex
     }
     
-    
 }
 
 extension GalleryViewController: UIPageViewControllerDelegate {
+    
+}
+
+extension GalleryViewController: PhotoViewControllerDelegate {
+    func photoViewWillAppear(at index: Int) {
+        self.title = galleryData.titles?[index]
+    }
     
 }
