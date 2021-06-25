@@ -9,57 +9,74 @@ import UIKit
 
 class GalleryTableViewCell: UITableViewCell {
     
+    
     let spasing: CGFloat = 5.0
     
-    var mainImageView: UIImageView = UIImageView()
-    var leftImageView: UIImageView = UIImageView()
-    var centerImageView: UIImageView = UIImageView()
-    var rightImageView: UIImageView = UIImageView()
+    var mainImageView: UIImageView?
+    var leftImageView: UIImageView?
+    var centerImageView: UIImageView?
+    var rightImageView: UIImageView?
+    var mainStackView: UIStackView?
+    var detailStackView: UIStackView?
+    var dateLabel: UILabel?
     
-    var imageConstraints: [NSLayoutConstraint] = []
-    
-    lazy var dateLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    lazy var mainStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = spasing
-        stackView.alignment = .fill
-        stackView.distribution = .equalSpacing
+    var galleryData: GalleryData? {
+        didSet {
+            guard let gallery = galleryData else { return }
+            
+            
+            dateLabel?.text = labelString(for: gallery.date)
+            dateLabel?.isEnabled = true
+            
+            if let mainImage = gallery.images[0] {
+//                print("setting main image")
+                
+                mainImageView?.image = mainImage
+                let ratio = mainImage.size.width / mainImage.size.height
+                
+                
+                
+                mainImageView?.widthAnchor.constraint(equalTo: mainImageView!.heightAnchor,
+                                                      multiplier: ratio).isActive = true
+                
+            }
+            
+            if let leftImage = gallery.images[1],
+                let centerImage = gallery.images[2],
+                let rightImage = gallery.images[3] {
+                
+                leftImageView?.image = leftImage
+                centerImageView?.image = centerImage
+                rightImageView?.image = rightImage
+                
+                let centerImageScaleIndex = leftImage.size.height / centerImage.size.height
+                let rightImageScaleIndex = leftImage.size.height / rightImage.size.height
+                let centerImageScaledWidth = centerImage.size.width * centerImageScaleIndex
+                let rightImageScaledWidth = rightImage.size.width * rightImageScaleIndex
+                let leftImageRatio = leftImage.size.width / leftImage.size.height
+                let centerImageRatio = centerImageScaledWidth / leftImage.size.height
+                let rightImageRatio = rightImageScaledWidth / leftImage.size.height
+                
 
-        let containerView = UIView()
-        containerView.addSubview(dateLabel)
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: spasing * 2).isActive = true
-        dateLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
-        dateLabel.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-        dateLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -spasing).isActive = true
+                leftImageView?.widthAnchor.constraint(equalTo: leftImageView!.heightAnchor,
+                                                      multiplier: leftImageRatio).isActive = true
+                centerImageView?.widthAnchor.constraint(equalTo: centerImageView!.heightAnchor,
+                                                        multiplier: centerImageRatio).isActive = true
+                rightImageView?.widthAnchor.constraint(equalTo: rightImageView!.heightAnchor,
+                                                       multiplier: rightImageRatio).isActive = true
+            }
+        }
+    }
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        stackView.addArrangedSubview(containerView)
-        stackView.addArrangedSubview(mainImageView)
-        stackView.addArrangedSubview(detailStackView)
-
-        return stackView
-    }()
+        configureCell()
+    }
     
-    lazy var detailStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.spacing = spasing
-        stackView.alignment = .fill
-        stackView.distribution = .equalSpacing
-
-        stackView.addArrangedSubview(leftImageView)
-        stackView.addArrangedSubview(centerImageView)
-        stackView.addArrangedSubview(rightImageView)
-
-        return stackView
-    }()
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private func labelString(for date: String) -> String {
         let formatter = DateFormatter()
@@ -78,94 +95,93 @@ class GalleryTableViewCell: UITableViewCell {
         return formatter.string(from: galleryDate)
     }
     
-    var galleryData: GalleryData? {
-        didSet {
-            guard let gallery = galleryData else { return }
-            
-            
-            dateLabel.text = labelString(for: gallery.date)
-            dateLabel.isEnabled = true
-            
-            if let mainImage = gallery.images[0] {
-                mainImageView.image = mainImage
-                let ratio = mainImage.size.width / mainImage.size.height
-                imageConstraints.append(mainImageView.widthAnchor.constraint(equalTo: mainImageView.heightAnchor,
-                                                     multiplier: ratio))
-            }
-            
-            if let leftImage = gallery.images[1],
-                let centerImage = gallery.images[2],
-                let rightImage = gallery.images[3] {
-                leftImageView.image = leftImage
-                centerImageView.image = centerImage
-                rightImageView.image = rightImage
-                
-                let centerImageScaleIndex = leftImage.size.height / centerImage.size.height
-                let rightImageScaleIndex = leftImage.size.height / rightImage.size.height
-                let centerImageScaledWidth = centerImage.size.width * centerImageScaleIndex
-                let rightImageScaledWidth = rightImage.size.width * rightImageScaleIndex
-                let leftImageRatio = leftImage.size.width / leftImage.size.height
-                let centerImageRatio = centerImageScaledWidth / leftImage.size.height
-                let rightImageRatio = rightImageScaledWidth / leftImage.size.height
-                
-
-                imageConstraints.append(leftImageView.widthAnchor.constraint(equalTo: leftImageView.heightAnchor,
-                                                                             multiplier: leftImageRatio))
-                imageConstraints.append(centerImageView.widthAnchor.constraint(equalTo: centerImageView.heightAnchor,
-                                                                               multiplier: centerImageRatio))
-                imageConstraints.append(rightImageView.widthAnchor.constraint(equalTo: rightImageView.heightAnchor,
-                                                                              multiplier: rightImageRatio))
-            }
-            
-            NSLayoutConstraint.activate(imageConstraints)
-        }
+    private func getLable() -> UILabel {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    private func getDetailStackView() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = spasing
+        stackView.alignment = .fill
+        stackView.distribution = .equalSpacing
 
-        mainImageView.contentMode = .scaleAspectFit
-        leftImageView.contentMode = .scaleAspectFit
-        centerImageView.contentMode = .scaleAspectFit
-        rightImageView.contentMode = .scaleAspectFit
-        
-        mainImageView.translatesAutoresizingMaskIntoConstraints = false
-        leftImageView.translatesAutoresizingMaskIntoConstraints = false
-        centerImageView.translatesAutoresizingMaskIntoConstraints = false
-        rightImageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        mainImageView.backgroundColor = .yellow
-        leftImageView.backgroundColor = .yellow
-        centerImageView.backgroundColor = .yellow
-        rightImageView.backgroundColor = .yellow
-        
-        self.addSubview(mainStackView)
-        
-        mainStackView.translatesAutoresizingMaskIntoConstraints = false
-        mainStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        mainStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        mainStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: spasing).isActive = true
-        mainStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -spasing).isActive = true
+        stackView.addArrangedSubview(leftImageView!)
+        stackView.addArrangedSubview(centerImageView!)
+        stackView.addArrangedSubview(rightImageView!)
+
+        return stackView
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    private func getMainStackView() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = spasing
+        stackView.alignment = .fill
+        stackView.distribution = .equalSpacing
+
+        dateLabel = getLable()
+        let containerView = UIView()
+        containerView.addSubview(dateLabel!)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        dateLabel?.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: spasing * 2).isActive = true
+        dateLabel?.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
+        dateLabel?.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        dateLabel?.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -spasing).isActive = true
+        
+        stackView.addArrangedSubview(containerView)
+        stackView.addArrangedSubview(mainImageView!)
+        
+        detailStackView = getDetailStackView()
+        stackView.addArrangedSubview(detailStackView!)
+
+        return stackView
+    }
+    
+    private func getImageView() -> UIImageView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.backgroundColor = .yellow
+        
+        return imageView
+    }
+    
+    private func configureCell() {
+        
+        mainImageView = getImageView()
+        leftImageView = getImageView()
+        centerImageView = getImageView()
+        rightImageView = getImageView()
+        mainStackView = getMainStackView()
+        
+        self.addSubview(mainStackView!)
+        
+        mainStackView?.translatesAutoresizingMaskIntoConstraints = false
+        mainStackView?.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        mainStackView?.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        mainStackView?.topAnchor.constraint(equalTo: self.topAnchor, constant: spasing).isActive = true
+        mainStackView?.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -spasing).isActive = true
     }
     
     override func prepareForReuse() {
         
-        mainImageView.removeConstraints(mainImageView.constraints)
-        leftImageView.removeConstraints(leftImageView.constraints)
-        centerImageView.removeConstraints(centerImageView.constraints)
-        rightImageView.removeConstraints(rightImageView.constraints)
+        for view in self.subviews {
+            view.removeFromSuperview()
+        }
         
-        self.removeConstraints(imageConstraints)
-        imageConstraints.removeAll()
+        mainImageView = nil
+        leftImageView = nil
+        centerImageView = nil
+        rightImageView = nil
+        mainStackView = nil
+        detailStackView = nil
+        dateLabel = nil
         
-        mainImageView.image = nil
-        leftImageView.image = nil
-        centerImageView.image = nil
-        rightImageView.image = nil
+        configureCell()
     }
         
 }

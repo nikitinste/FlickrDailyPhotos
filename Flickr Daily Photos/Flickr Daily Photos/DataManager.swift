@@ -16,6 +16,7 @@ class DataManager {
     
     var delegate: DataManagerDelegate!
     var galleriesCount: Int = 0
+    let galleriesAtRequest: Int = 20
     private var galleries: [String: GalleryData] = [:]
     private var imageCache = NSCache<NSString, NSData>()
     
@@ -91,6 +92,9 @@ class DataManager {
             urlComonents.path.append(photoURLpath)
             urls.append(urlComonents.url!)
         }
+        if urls.isEmpty {
+            print(":( No :hotos for date: \(date)")
+        }
         let gallery = GalleryData(date: date, imageURLs: urls)
         galleries[date] = gallery
     }
@@ -140,7 +144,6 @@ class DataManager {
     func getGallery(for row: Int) -> GalleryData {
         let date = dateString(for: row)
         
-        print("Get gallery for row: \(row) with date: \(date)")
         
         if var gallery = galleries[date],
            let photoURLs = gallery.imageURLs {
@@ -149,7 +152,6 @@ class DataManager {
                     let image = UIImage(data: imageData as Data)
                     gallery.images[index] = image
                     
-                    print("image \(index) url: \(url)")
                 } else {
                     fetсhPhoto(for: gallery.date, by: index, from: url)
                 }
@@ -169,14 +171,13 @@ class DataManager {
         
         var completedTasks = 0
         
-        for i in 0...9 {
+        for i in 0...(galleriesAtRequest - 1) {
             
             
             let date = dateString(for: row + i)
             var queryItems = galleryQueryItems()
             queryItems["date"] = date
             urlComponents.queryItems = queryItems.map { URLQueryItem(name: $0.key, value: $0.value) }
-//            print(urlComponents.url!)
             
             let task = session.dataTask(with: urlComponents.url!) { [weak self] (data, response, error) in
                 let jsonDecoder = JSONDecoder()
@@ -184,14 +185,11 @@ class DataManager {
                     do {
                         let galleryResponse = try jsonDecoder.decode(GalleryResponse.self, from: data)
                         //completion(.success(galleryResponse))
-                        print("JSON Decoding success")
-//                        print("JSON Decoding success\n\(galleryResponse)")
-
                         let photos = galleryResponse.gallery.photos
                         self?.addGallery(with: photos, for: date)
                         completedTasks += 1
                         if completedTasks == 10 {
-                            self?.galleriesCount += 10
+                            self?.galleriesCount += self!.galleriesAtRequest
                             self?.delegate.galleryDidLoad()
                         }
                     } catch {
@@ -199,7 +197,7 @@ class DataManager {
                         print("JSON Decoding failure")
                         completedTasks += 1
                         if completedTasks == 10 {
-                            self?.galleriesCount += 10
+                            self?.galleriesCount += self!.galleriesAtRequest
                             self?.delegate.galleryDidLoad()
                         }
                     }
@@ -207,9 +205,6 @@ class DataManager {
                     //completion(.failure(error))
                     print("Galleries fetching error:\n\(error)")
                 }
-//                if
-//                self?.galleriesCount += 10
-//                self?.delegate.galleryDidLoad()
             }
             task.resume()
             

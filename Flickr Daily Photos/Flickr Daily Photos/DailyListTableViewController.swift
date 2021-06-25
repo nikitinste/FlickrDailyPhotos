@@ -48,24 +48,15 @@ extension DailyListTableViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let count = dataManager.galleriesCount
-        
-        print(count)
-        
+                
         return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "galleryCell", for: indexPath) as! GalleryTableViewCell
-        
-        
         let gallery = dataManager.getGallery(for: indexPath.row)
-        
-//        gallegy.images = [UIImage(named: "rocketLaunch")!, UIImage(named: "fields")!, UIImage(named: "girl")!, UIImage(named: "bird")!]
-
         cell.galleryData = gallery
         
-        print("Cell for row: \(indexPath.row) with urls:\n\(gallery.imageURLs)")
-//        print("cell for row at index: \(indexPath.row)")
         return cell
     }
     
@@ -76,11 +67,20 @@ extension DailyListTableViewController: UITableViewDataSource {
 
 extension DailyListTableViewController: UITableViewDelegate {
     
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        if indexPath.row >= dataManager.galleriesCount - 1 {
-//            dataManager.fetchGalleries(for: indexPath.row)
-//        }
-//    }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == dataManager.galleriesCount - 1,
+           let visibleRows = self.tableView.indexPathsForVisibleRows,
+            visibleRows.contains(indexPath),
+            self === self.navigationController?.topViewController {
+            
+            print("willDisplay cell")
+            dataManager.fetchGalleries(for: indexPath.row)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // push controller
+    }
     
 }
 
@@ -92,33 +92,23 @@ extension DailyListTableViewController: DataManagerDelegate {
         DispatchQueue.main.async {
             
             let cell = self.tableView(self.tableView, cellForRowAt: indexPath) as! GalleryTableViewCell
-            
-//            print("update gallery ...")
-            
+                        
             cell.galleryData = gallery
-//                print("success!       ...")
-//                self.tableView.reloadData()
+
             if let visibleRows = self.tableView.indexPathsForVisibleRows,
                visibleRows.contains(indexPath),
                self === self.navigationController?.topViewController {
-//                    self.tableView.reloadRows(at: [indexPath], with: .automatic)
                 self.tableView.reloadData()
             }
-        
-//            if cell.galleryData?.date == gallery.date {
-//
-//            }/* else { print("failure ((( .......................") }*/
-            
-            
-            // set gallery to cell, reload row
         }
     }
     
     func galleryDidLoad() {
         DispatchQueue.main.async {
-//            self.dataManager.galleriesCount += 1
-            print("Data reloading")
-            self.tableView.reloadData()
+            
+            if self === self.navigationController?.topViewController {
+                self.tableView.reloadData()
+            }
         }
     }
 }
