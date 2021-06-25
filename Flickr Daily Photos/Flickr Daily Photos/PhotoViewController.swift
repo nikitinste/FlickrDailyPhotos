@@ -9,12 +9,31 @@ import UIKit
 
 class PhotoViewController: UIViewController {
     
-    var titleLabel: UILabel?
+//    var titleLabel: UILabel?
+    private var imageView: UIImageView?
+    private var photoImage: UIImage?
     
     var page: Pages
+    
+    
+//    var photoImage: UIImage? {
+//        didSet {
+//
+//
+//
+//
+//        }
+//    }
 
-    init(with page: Pages) {
+    init(with page: Pages, photo: UIImage?) {
         self.page = page
+        self.photoImage = photo
+        
+        if photo != nil {
+            print("image!")
+        } else {
+            print("no image(")
+        }
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -26,11 +45,12 @@ class PhotoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
-        titleLabel?.center = CGPoint(x: 160, y: 250)
-        titleLabel?.textAlignment = NSTextAlignment.center
-        titleLabel?.text = page.name
-        self.view.addSubview(titleLabel!)
+        imageView = UIImageView(frame: self.view.frame)
+        imageView?.contentMode = .scaleAspectFit
+//        imageView?.backgroundColor = .blue
+//            imageView?.translatesAutoresizingMaskIntoConstraints = false
+        imageView?.image = photoImage
+        self.view.addSubview(imageView!)
     }
 
 }

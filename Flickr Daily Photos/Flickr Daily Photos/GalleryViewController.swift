@@ -39,7 +39,7 @@ class GalleryViewController: UIViewController {
         self.view.addSubview(self.pageController!.view)
         
         
-        let initialVC = PhotoViewController(with: pages[0])
+        let initialVC = PhotoViewController(with: pages[0], photo: galleryData.images[0])
         self.pageController?.setViewControllers([initialVC], direction: .forward, animated: true, completion: nil)
         
         self.pageController?.didMove(toParent: self)
@@ -61,7 +61,7 @@ extension GalleryViewController: UIPageViewControllerDataSource {
             return nil
         }
         index -= 1
-        let viewController: PhotoViewController = PhotoViewController(with: pages[index])
+        let viewController: PhotoViewController = PhotoViewController(with: pages[index], photo: galleryData.images[index])
         
         return viewController
     }
@@ -77,7 +77,7 @@ extension GalleryViewController: UIPageViewControllerDataSource {
             return nil
         }
         index += 1
-        let viewController: PhotoViewController = PhotoViewController(with: pages[index])
+        let viewController: PhotoViewController = PhotoViewController(with: pages[index], photo: galleryData.images[index])
         
         return viewController
         
