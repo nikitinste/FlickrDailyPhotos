@@ -96,7 +96,7 @@ class DataManager {
             
         }
         if urls.isEmpty {
-            print(":( No :hotos for date: \(date)")
+            print(":( No photos for date: \(date)")
         }
         let gallery = GalleryData(date: date, titles: titles, imageURLs: urls)
         galleries[date] = gallery
