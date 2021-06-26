@@ -77,7 +77,7 @@ class GalleryTableViewCell: UITableViewCell {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYY-MM-dd"
         let galleryDate = formatter.date(from: date)!
-        let currentDate = DataManager.getDate()
+        let currentDate = DataManager.currentDate
         
         let daysAgo = Calendar.current.dateComponents([.day], from: galleryDate, to: currentDate).day!
         

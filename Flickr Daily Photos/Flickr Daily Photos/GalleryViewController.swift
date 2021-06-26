@@ -110,3 +110,9 @@ extension GalleryViewController: PhotoViewControllerDelegate {
     }
     
 }
+
+extension GalleryViewController: DataManagerGalleryDelegate {
+    func updatedGallery(_ gallery: GalleryData) {
+        galleryData = gallery
+    }
+}

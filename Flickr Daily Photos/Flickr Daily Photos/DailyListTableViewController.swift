@@ -23,7 +23,7 @@ class DailyListTableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        dataManager.delegate = self
+        dataManager.listDelegate = self
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
@@ -55,7 +55,7 @@ extension DailyListTableViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "galleryCell", for: indexPath) as! GalleryTableViewCell
-        let gallery = dataManager.getGallery(for: indexPath.row)
+        let gallery = dataManager.getGalleryForCell(in: indexPath.row)
         cell.galleryData = gallery
         
         return cell
@@ -81,15 +81,17 @@ extension DailyListTableViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let galleryViewController = GalleryViewController()
-        galleryViewController.galleryData = dataManager.getGallery(for: indexPath.row)
+        dataManager.galleryDelegate = galleryViewController.self
+        galleryViewController.galleryData = dataManager.getWholeGallery(for: indexPath.row)
         navigationController?.pushViewController(galleryViewController, animated: true)
+        
     }
     
 }
 
 // MARK: - DataManagerDelegate
 
-extension DailyListTableViewController: DataManagerDelegate {
+extension DailyListTableViewController: DataManagerListDelegate {
     
     func updatedGallery(_ gallery: GalleryData, at indexPath: IndexPath) {
         DispatchQueue.main.async {

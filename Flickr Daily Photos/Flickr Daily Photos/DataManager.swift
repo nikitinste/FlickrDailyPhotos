@@ -14,16 +14,15 @@ class DataManager {
     
     let session: URLSession
     
-    var delegate: DataManagerDelegate!
+    var listDelegate: DataManagerListDelegate!
+    var galleryDelegate: DataManagerGalleryDelegate!
     var galleriesCount: Int = 0
     let galleriesAtRequest: Int = 20
     private var galleries: [String: GalleryData] = [:]
     private var imageCache = NSCache<NSString, NSData>()
     
+    static let currentDate = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
     
-    static func getDate() -> Date {
-        Date()
-    }
     
     // MARK: - private
     
@@ -62,7 +61,7 @@ class DataManager {
     
     private func dateForIndex(_ index: Int) -> Date {
         let calendar = Calendar.current
-        let date = calendar.date(byAdding: .day, value: -index, to: DataManager.getDate())!
+        let date = calendar.date(byAdding: .day, value: -index, to: DataManager.currentDate)!
         
         return date
     }
@@ -116,18 +115,15 @@ class DataManager {
         return nil
     }
     
-    private func fetсhPhoto(for date: String, by index: Int, from url: URL) {
-//        guard index <= 3 else { return }
-        let task = session.dataTask(with: url) { [weak self] (data, response, error) in
+    private func fetсhPhoto(for date: String, by index: Int, from url: URL, with closure: @escaping (GalleryData, IndexPath) -> Void) {
+        let task = session.dataTask(with: url) { (data, response, error) in
             if let data = data {
                 
-                self!.imageCache.setObject(data as NSData, forKey: url.absoluteString as NSString)
+                self.imageCache.setObject(data as NSData, forKey: url.absoluteString as NSString)
                 
-                let gallery = self!.getGalleryForDate(date)!
-                let indexPath = IndexPath(row: self!.rowForDate(date), section: 0)
-                if index <= 3 {
-                    self!.delegate.updatedGallery(gallery, at: indexPath)
-                }
+                let gallery = self.getGalleryForDate(date)!
+                let indexPath = IndexPath(row: self.rowForDate(date), section: 0)
+                closure(gallery, indexPath)
                 
             } else if let error = error {
                 //completion(.failure(error))
@@ -143,21 +139,53 @@ class DataManager {
     
     // MARK: - internal
     
-    func getGallery(for row: Int) -> GalleryData {
+    func getWholeGallery(for row: Int) -> GalleryData {
         let date = dateString(for: row)
-        
         
         if var gallery = galleries[date],
            let photoURLs = gallery.imageURLs {
+            
             for (index, url) in photoURLs.enumerated() {
                 if let imageData = imageCache.object(forKey: url.absoluteString as NSString) {
                     let image = UIImage(data: imageData as Data)
                     gallery.images[index] = image
                     
                 } else {
-                    fetсhPhoto(for: gallery.date, by: index, from: url)
+                    fetсhPhoto(for: gallery.date,
+                                by: index,
+                                from: photoURLs[index],
+                                with: { gallery, indexPath in
+                        self.galleryDelegate.updatedGallery(gallery)
+                        
+                    })
                 }
             }
+            return gallery
+        }
+        return GalleryData(date: date)
+    }
+    
+    func getGalleryForCell(in row: Int) -> GalleryData {
+        let date = dateString(for: row)
+        
+        
+        if var gallery = galleries[date],
+           let photoURLs = gallery.imageURLs {
+            
+            for (index, url) in photoURLs.enumerated() {
+                if index >= 4 { break }
+                if let imageData = imageCache.object(forKey: url.absoluteString as NSString) {
+                    let image = UIImage(data: imageData as Data)
+                    gallery.images[index] = image
+                    
+                } else {
+                    fetсhPhoto(for: gallery.date, by: index, from: url,
+                                with: { gallery, indexPath in
+                        self.listDelegate.updatedGallery(gallery, at: indexPath)
+                    })
+                }
+            }
+            
         return gallery
         }
         
@@ -192,7 +220,7 @@ class DataManager {
                         completedTasks += 1
                         if completedTasks == 10 {
                             self?.galleriesCount += self!.galleriesAtRequest
-                            self?.delegate.galleryDidLoad()
+                            self?.listDelegate.galleryDidLoad()
                         }
                     } catch {
                         //completion(.failure(error))
@@ -200,7 +228,7 @@ class DataManager {
                         completedTasks += 1
                         if completedTasks == 10 {
                             self?.galleriesCount += self!.galleriesAtRequest
-                            self?.delegate.galleryDidLoad()
+                            self?.listDelegate.galleryDidLoad()
                         }
                     }
                 } else if let error = error {
@@ -209,9 +237,6 @@ class DataManager {
                 }
             }
             task.resume()
-            
-            
-            
         }
     }
     
@@ -219,7 +244,11 @@ class DataManager {
     
 }
 
-protocol DataManagerDelegate {
+protocol DataManagerListDelegate {
     func updatedGallery(_ gallery: GalleryData, at indexPath: IndexPath) -> Void
     func galleryDidLoad() -> Void
+}
+
+protocol DataManagerGalleryDelegate {
+    func updatedGallery(_ gallery: GalleryData)
 }
