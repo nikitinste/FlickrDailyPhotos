@@ -209,26 +209,26 @@ class DataManager {
             queryItems["date"] = date
             urlComponents.queryItems = queryItems.map { URLQueryItem(name: $0.key, value: $0.value) }
             
-            let task = session.dataTask(with: urlComponents.url!) { [weak self] (data, response, error) in
+            let task = session.dataTask(with: urlComponents.url!) { (data, response, error) in
                 let jsonDecoder = JSONDecoder()
                 if let data = data {
                     do {
                         let galleryResponse = try jsonDecoder.decode(GalleryResponse.self, from: data)
                         //completion(.success(galleryResponse))
                         let photos = galleryResponse.gallery.photos
-                        self?.addGallery(with: photos, for: date)
+                        self.addGallery(with: photos, for: date)
                         completedTasks += 1
-                        if completedTasks == 10 {
-                            self?.galleriesCount += self!.galleriesAtRequest
-                            self?.listDelegate.galleryDidLoad()
+                        if completedTasks == self.galleriesAtRequest {
+                            self.galleriesCount += self.galleriesAtRequest
+                            self.listDelegate.galleryDidLoad()
                         }
                     } catch {
                         //completion(.failure(error))
                         print("JSON Decoding failure for date \(date)")
                         completedTasks += 1
-                        if completedTasks == 10 {
-                            self?.galleriesCount += self!.galleriesAtRequest
-                            self?.listDelegate.galleryDidLoad()
+                        if completedTasks == self.galleriesAtRequest {
+                            self.galleriesCount += self.galleriesAtRequest
+                            self.listDelegate.galleryDidLoad()
                         }
                     }
                 } else if let error = error {

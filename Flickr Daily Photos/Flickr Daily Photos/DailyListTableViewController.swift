@@ -80,9 +80,12 @@ extension DailyListTableViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let gallery = dataManager.getWholeGallery(for: indexPath.row)
+        if let isEmpty = gallery.imageURLs?.isEmpty, isEmpty { return }
+        
         let galleryViewController = GalleryViewController()
         dataManager.galleryDelegate = galleryViewController.self
-        galleryViewController.galleryData = dataManager.getWholeGallery(for: indexPath.row)
+        galleryViewController.galleryData = gallery
         navigationController?.pushViewController(galleryViewController, animated: true)
         
     }
@@ -103,7 +106,8 @@ extension DailyListTableViewController: DataManagerListDelegate {
             if let visibleRows = self.tableView.indexPathsForVisibleRows,
                visibleRows.contains(indexPath),
                self === self.navigationController?.topViewController {
-                self.tableView.reloadData()
+//                self.tableView.reloadData()
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         }
     }
