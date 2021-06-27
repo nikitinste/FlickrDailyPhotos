@@ -106,7 +106,6 @@ extension DailyListTableViewController: DataManagerListDelegate {
             if let visibleRows = self.tableView.indexPathsForVisibleRows,
                visibleRows.contains(indexPath),
                self === self.navigationController?.topViewController {
-//                self.tableView.reloadData()
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         }
@@ -118,6 +117,21 @@ extension DailyListTableViewController: DataManagerListDelegate {
             if self === self.navigationController?.topViewController {
                 self.tableView.reloadData()
             }
+        }
+    }
+    
+    func showNetworkError() {
+        DispatchQueue.main.async {  [weak self] in
+            let alert = UIAlertController(title: "Network Error!",
+                                          message: "Please check the connection.",
+                                          preferredStyle: .alert)
+            
+            alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { action in
+                print("Retry...(connection)")
+                self?.dataManager.fetchGalleries(for: 0)
+            }))
+            
+            self?.present(alert, animated: true)
         }
     }
 }

@@ -28,6 +28,7 @@ class DataManager {
     
     private init() {
         session = URLSession(configuration: .default)
+        
     }
     
     private func galleryQueryItems() -> [String: String] {
@@ -196,7 +197,6 @@ class DataManager {
     
     
     func fetchGalleries(for row: Int) {
-
         var urlComponents = galleryURLComponents()
         
         var completedTasks = 0
@@ -234,6 +234,7 @@ class DataManager {
                 } else if let error = error {
                     //completion(.failure(error))
                     print("Galleries fetching error:\n\(error)")
+                    self.listDelegate.showNetworkError()
                 }
             }
             task.resume()
@@ -247,6 +248,7 @@ class DataManager {
 protocol DataManagerListDelegate {
     func updatedGallery(_ gallery: GalleryData, at indexPath: IndexPath) -> Void
     func galleryDidLoad() -> Void
+    func showNetworkError() -> Void
 }
 
 protocol DataManagerGalleryDelegate {
